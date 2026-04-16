@@ -1,0 +1,8 @@
+langchain
+langgraph
+openai
+pypdf
+langsmith[openai-agents]
+python-dotenv
+pydantic
+pytest
