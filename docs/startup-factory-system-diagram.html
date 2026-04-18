@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Factory System Diagram v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f1e8;
+    --bg-2: #fffaf2;
+    --panel: rgba(255, 252, 247, 0.86);
+    --panel-strong: #fffdf9;
+    --ink: #1d1a16;
+    --muted: #6f665d;
+    --line: rgba(50, 36, 17, 0.12);
+    --accent: #ba4a00;
+    --accent-soft: rgba(186, 74, 0, 0.1);
+    --blue: #1352d1;
+    --blue-soft: rgba(19, 82, 209, 0.1);
+    --teal: #0b7a6d;
+    --teal-soft: rgba(11, 122, 109, 0.1);
+    --gold: #b67b00;
+    --gold-soft: rgba(182, 123, 0, 0.1);
+    --plum: #8247a4;
+    --plum-soft: rgba(130, 71, 164, 0.1);
+    --shadow: 0 20px 50px rgba(64, 37, 4, 0.08);
+    --font-ui: "Space Grotesk", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-ui);
+    color: var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(186, 74, 0, 0.12), transparent 28%),
+      radial-gradient(circle at top right, rgba(19, 82, 209, 0.08), transparent 30%),
+      linear-gradient(180deg, #faf6ee 0%, #f4ede3 100%);
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    padding: 0.18em 0.44em;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .wrap {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 28px 22px 60px;
+  }
+
+  .hero {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 246, 232, 0.84)),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(186, 74, 0, 0.02) 0,
+        rgba(186, 74, 0, 0.02) 10px,
+        transparent 10px,
+        transparent 20px
+      );
+    border: 1px solid rgba(186, 74, 0, 0.14);
+    border-radius: 28px;
+    padding: 34px 32px 30px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -60px -80px auto;
+    width: 240px;
+    height: 240px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(19, 82, 209, 0.18), transparent 65%);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(186, 74, 0, 0.16);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: clamp(34px, 5vw, 68px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin: 18px 0 14px;
+    max-width: 900px;
+  }
+
+  .hero strong {
+    color: var(--accent);
+  }
+
+  .sub {
+    max-width: 860px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .badge {
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+    backdrop-filter: blur(8px);
+  }
+
+  .rail {
+    position: sticky;
+    top: 14px;
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 252, 247, 0.82);
+    border: 1px solid rgba(50, 36, 17, 0.09);
+    box-shadow: 0 14px 32px rgba(64, 37, 4, 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .rail-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    transition: 160ms ease;
+  }
+
+  .rail-link:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: rgba(186, 74, 0, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .section {
+    margin-top: 24px;
+    background: var(--panel);
+    border: 1px solid rgba(50, 36, 17, 0.09);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex: 0 0 auto;
+  }
+
+  .section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .section-line {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, var(--line), transparent);
+  }
+
+  .entry-grid,
+  .contract-grid,
+  .runtime-grid,
+  .future-grid,
+  .inventory-grid,
+  .matrix-grid,
+  .decision-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .entry-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .contract-grid {
+    grid-template-columns: 1.15fr 1fr 1fr;
+  }
+
+  .runtime-grid,
+  .future-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 18px;
+  }
+
+  .matrix-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .decision-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card,
+  .metric {
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before,
+  .metric::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), rgba(186, 74, 0, 0));
+  }
+
+  .tone-blue::before {
+    background: linear-gradient(90deg, var(--blue), rgba(19, 82, 209, 0));
+  }
+
+  .tone-teal::before {
+    background: linear-gradient(90deg, var(--teal), rgba(11, 122, 109, 0));
+  }
+
+  .tone-gold::before {
+    background: linear-gradient(90deg, var(--gold), rgba(182, 123, 0, 0));
+  }
+
+  .tone-plum::before {
+    background: linear-gradient(90deg, var(--plum), rgba(130, 71, 164, 0));
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    color: var(--muted);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .card h3,
+  .metric h3 {
+    margin: 14px 0 8px;
+    font-size: 22px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .card p,
+  .metric p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .mini-list {
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+
+  .mini-list li {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.025);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .flow-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .flow-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 252, 248, 0.94));
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 20px;
+  }
+
+  .flow-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .flow-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .flow-sub {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 760px;
+    line-height: 1.6;
+    margin-top: 6px;
+  }
+
+  .status-pill {
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .status-live {
+    color: var(--teal);
+    background: var(--teal-soft);
+    border-color: rgba(11, 122, 109, 0.16);
+  }
+
+  .status-plan {
+    color: var(--gold);
+    background: var(--gold-soft);
+    border-color: rgba(182, 123, 0, 0.16);
+  }
+
+  .node-flow {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(180px, 1fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .planned-flow {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(160px, 1fr));
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .node {
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    background: #fffdf9;
+    position: relative;
+    min-height: 180px;
+  }
+
+  .node.current {
+    background:
+      linear-gradient(180deg, rgba(11, 122, 109, 0.06), rgba(255, 255, 255, 0)),
+      #fffdf9;
+  }
+
+  .node.future {
+    background:
+      linear-gradient(180deg, rgba(182, 123, 0, 0.08), rgba(255, 255, 255, 0)),
+      #fffdf9;
+    border-style: dashed;
+  }
+
+  .node h4 {
+    margin: 10px 0 6px;
+    font-size: 18px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .node p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .node-code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink);
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .node-note {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .arrow-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin: 10px 90px 4px;
+    color: var(--accent);
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .planned-arrows {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    margin: 10px 90px 4px;
+    color: var(--gold);
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .subflow-note {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 16px;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.68);
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+  }
+
+  .legend-live {
+    background: var(--teal);
+  }
+
+  .legend-plan {
+    background: var(--gold);
+  }
+
+  .legend-contract {
+    background: var(--blue);
+  }
+
+  .legend-llm {
+    background: var(--plum);
+  }
+
+  .matrix-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 249, 241, 0.96));
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .matrix-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), rgba(186, 74, 0, 0));
+  }
+
+  .matrix-card.live::before {
+    background: linear-gradient(90deg, var(--teal), rgba(11, 122, 109, 0));
+  }
+
+  .matrix-card.final::before {
+    background: linear-gradient(90deg, var(--blue), rgba(19, 82, 209, 0));
+  }
+
+  .matrix-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .matrix-title {
+    margin-top: 12px;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+
+  .matrix-desc {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .matrix-stack {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .matrix-block {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(0, 0, 0, 0.025);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .matrix-k {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .matrix-v {
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .rule-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .decision-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 250, 244, 0.96));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .decision-card h3 {
+    margin: 10px 0 8px;
+    font-size: 20px;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .decision-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .chip {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .trace-flow {
+    display: grid;
+    grid-template-columns: 1fr 110px 1fr;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .trace-arrow {
+    text-align: center;
+    color: var(--accent);
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .code-block {
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.8;
+    background: #201812;
+    color: #fff2de;
+    padding: 16px;
+    border-radius: 16px;
+    overflow-x: auto;
+  }
+
+  .metric {
+    text-align: center;
+  }
+
+  .metric .num {
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 14px;
+  }
+
+  .metric .metric-label {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+
+  .footer {
+    margin-top: 26px;
+    text-align: center;
+    color: rgba(29, 26, 22, 0.48);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 1200px) {
+    .entry-grid,
+    .contract-grid,
+    .runtime-grid,
+    .future-grid,
+    .inventory-grid,
+    .matrix-grid,
+    .decision-grid,
+    .node-flow,
+    .planned-flow,
+    .trace-flow {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .arrow-row,
+    .planned-arrows {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .wrap {
+      padding: 16px 14px 44px;
+    }
+
+    .hero,
+    .section,
+    .flow-card {
+      padding: 18px;
+    }
+
+    .entry-grid,
+    .contract-grid,
+    .runtime-grid,
+    .future-grid,
+    .inventory-grid,
+    .matrix-grid,
+    .decision-grid,
+    .node-flow,
+    .planned-flow,
+    .trace-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .flow-head {
+      flex-direction: column;
+    }
+
+    .rail {
+      position: static;
+      padding: 12px;
+    }
+
+    h1 {
+      font-size: 38px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">LangGraph Architecture Diagram v2</div>
+      <h1>Startup <strong>Factory</strong> system flow with runtime wiring, prompt choreography, and the planned next graph.</h1>
+      <p class="sub">
+        This page turns the architecture notes into a browser-friendly flow. It shows what is already implemented in the current
+        <code>startup_factory</code> package, what the typed contracts look like, where OpenAI and LangSmith sit in the runtime, and where
+        optional deep-agent workers can slot in later without taking over the whole application.
+      </p>
+      <div class="badge-row">
+        <div class="badge">Current V1 graph: 6 active nodes</div>
+        <div class="badge">Planned graph: 9 stages with bounded refinement</div>
+        <div class="badge">Typed state via Pydantic + TypedDict</div>
+        <div class="badge">Prompt choreography lane added in V2</div>
+        <div class="badge">CLI-first today, API/UI ready later</div>
+      </div>
+    </section>
+
+    <nav class="rail" aria-label="Section navigation">
+      <a class="rail-link" href="#entry">Entry</a>
+      <a class="rail-link" href="#flow">Flow</a>
+      <a class="rail-link" href="#matrix">Node Matrix</a>
+      <a class="rail-link" href="#contracts">Contracts</a>
+      <a class="rail-link" href="#runtime">Runtime</a>
+      <a class="rail-link" href="#future">Next Layer</a>
+      <a class="rail-link" href="#inventory">Snapshot</a>
+    </nav>
+
+    <section class="section" id="entry">
+      <div class="section-head">
+        <div class="section-num">1</div>
+        <div class="section-title">Entry Layer</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="entry-grid">
+        <article class="card">
+          <div class="label">Current entrypoint</div>
+          <h3>CLI request</h3>
+          <p><code>startup_factory.cli</code> parses <code>--brief</code>, <code>--top-k</code>, and repeatable constraints before creating a validated run request.</p>
+          <ul class="mini-list">
+            <li><code>python -m startup_factory.cli --brief "..."</code>
+            </li>
+            <li>Optional `--json` output for machine-readable runs</li>
+            <li>Small surface area, easy to debug locally</li>
+          </ul>
+        </article>
+        <article class="card tone-blue">
+          <div class="label">Future interface</div>
+          <h3>API and UI</h3>
+          <p>The architecture doc reserves a service boundary for FastAPI and a future browser UI without changing the graph core.</p>
+          <ul class="mini-list">
+            <li>FastAPI router can call the same graph function</li>
+            <li>Future UI can submit briefs and render reports</li>
+            <li>No orchestration logic needs to move out of LangGraph</li>
+          </ul>
+        </article>
+        <article class="card tone-teal">
+          <div class="label">Validation</div>
+          <h3>RunRequest contract</h3>
+          <p>The first hard gate is <code>RunRequest</code>: non-blank brief, optional constraints, and a safe <code>top_k</code> range.</p>
+          <ul class="mini-list">
+            <li>Blank briefs are rejected</li>
+            <li>`top_k` is bounded from 1 to 10</li>
+            <li>Constraint parsing stays explicit and debuggable</li>
+          </ul>
+        </article>
+        <article class="card tone-gold">
+          <div class="label">Output goal</div>
+          <h3>Ranked report</h3>
+          <p>The entry layer is thin because the real product value is a final ranked startup report with clear fields and scores.</p>
+          <ul class="mini-list">
+            <li>Problem</li>
+            <li>Solution</li>
+            <li>ICP, MVP, GTM</li>
+            <li>Critic summary and score breakdown</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="flow">
+      <div class="section-head">
+        <div class="section-num">2</div>
+        <div class="section-title">Graph Flow</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot legend-live"></span>Implemented stage in the current graph</div>
+        <div class="legend-item"><span class="legend-dot legend-plan"></span>Planned stage from the architecture roadmap</div>
+        <div class="legend-item"><span class="legend-dot legend-contract"></span>Typed contract or serializer boundary</div>
+        <div class="legend-item"><span class="legend-dot legend-llm"></span>LLM-backed node with prompt file input</div>
+      </div>
+
+      <div class="flow-stack">
+        <div class="flow-card">
+          <div class="flow-head">
+            <div>
+              <div class="flow-title">Implemented V1 runtime flow</div>
+              <div class="flow-sub">
+                This is the real graph in <code>startup_factory/graph.py</code> today: six sequential nodes wired into a deterministic,
+                typed pipeline that starts from a brief and ends in <code>final_output</code>.
+              </div>
+            </div>
+            <div class="status-pill status-live">Implemented now</div>
+          </div>
+          <div class="node-flow">
+            <div class="node current">
+              <div class="node-code">industry_scan</div>
+              <h4>Scan industries</h4>
+              <p>Find promising industries with current inefficiencies and explain why now is a good moment.</p>
+              <div class="node-note">Writes: `industries`</div>
+            </div>
+            <div class="node current">
+              <div class="node-code">problem_mine</div>
+              <h4>Mine problems</h4>
+              <p>Turn industry observations into concrete operational pain tied to real buyers.</p>
+              <div class="node-note">Reads `industries`, writes `problems`</div>
+            </div>
+            <div class="node current">
+              <div class="node-code">generate_ideas</div>
+              <h4>Generate ideas</h4>
+              <p>Map narrow pain into buildable B2B software ideas with ICP, MVP, and GTM fields.</p>
+              <div class="node-note">Reads `problems`, writes `ideas`</div>
+            </div>
+            <div class="node current">
+              <div class="node-code">critique_ideas</div>
+              <h4>Stress test ideas</h4>
+              <p>Attack assumptions, pull out fatal risks, and keep the system from ranking weak ideas too early.</p>
+              <div class="node-note">Reads `ideas`, writes `critiques`</div>
+            </div>
+            <div class="node current">
+              <div class="node-code">score_ideas</div>
+              <h4>Score and rank</h4>
+              <p>Combine idea drafts with critiques, enforce ID alignment, sort by score, and truncate by <code>top_k</code>.</p>
+              <div class="node-note">Writes <code>scores</code> and <code>ranked_ideas</code></div>
+            </div>
+            <div class="node current">
+              <div class="node-code">finalize_output</div>
+              <h4>Finalize report</h4>
+              <p>Serialize the brief and ranked ideas into a <code>FinalReport</code> that the CLI can print as markdown or JSON.</p>
+              <div class="node-note">Writes <code>final_output</code></div>
+            </div>
+          </div>
+          <div class="arrow-row">
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+          </div>
+          <div class="subflow-note">
+            <div class="chip">Sequential orchestration via `StateGraph`</div>
+            <div class="chip">Structured outputs validated at every node</div>
+            <div class="chip">Failure mode: missing critique or score raises immediately</div>
+          </div>
+        </div>
+
+        <div class="flow-card">
+          <div class="flow-head">
+            <div>
+              <div class="flow-title">Planned full graph from the architecture doc</div>
+              <div class="flow-sub">
+                The design doc sketches a richer graph with evidence and refinement layers. Those boxes are intentionally shown as
+                planned so the HTML stays honest about what exists versus what is still on the roadmap.
+              </div>
+            </div>
+            <div class="status-pill status-plan">Planned expansion</div>
+          </div>
+          <div class="planned-flow">
+            <div class="node current">
+              <div class="node-code">industry_scan</div>
+              <h4>Industry scan</h4>
+              <p>Shared starting point in both the implemented and planned designs.</p>
+            </div>
+            <div class="node current">
+              <div class="node-code">problem_mine</div>
+              <h4>Problem mine</h4>
+              <p>Translate broad inefficiencies into concrete B2B pain.</p>
+            </div>
+            <div class="node future">
+              <div class="node-code">quantify_pain</div>
+              <h4>Quantify pain</h4>
+              <p>Add money, time, risk, or headcount weight so weak pain does not slip through.</p>
+            </div>
+            <div class="node current">
+              <div class="node-code">generate_ideas</div>
+              <h4>Generate ideas</h4>
+              <p>Create candidate businesses from validated problems.</p>
+            </div>
+            <div class="node future">
+              <div class="node-code">expand_ideas</div>
+              <h4>Expand ideas</h4>
+              <p>Strengthen raw concepts with buyer, wedge, pricing shape, and MVP detail.</p>
+            </div>
+            <div class="node current">
+              <div class="node-code">critique_ideas</div>
+              <h4>Critique ideas</h4>
+              <p>Red-team assumptions and surface adoption friction.</p>
+            </div>
+            <div class="node future">
+              <div class="node-code">refine_ideas?</div>
+              <h4>Refine loop</h4>
+              <p>Conditionally improve ideas only when critique quality is low enough to justify another pass.</p>
+            </div>
+            <div class="node current">
+              <div class="node-code">score_ideas</div>
+              <h4>Score ideas</h4>
+              <p>Normalize evaluation across urgency, willingness to pay, feasibility, and defensibility.</p>
+            </div>
+            <div class="node current">
+              <div class="node-code">finalize_output</div>
+              <h4>Finalize output</h4>
+              <p>Return ranked ideas and evaluation context to the caller.</p>
+            </div>
+          </div>
+          <div class="planned-arrows">
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+            <div>&rarr;</div>
+          </div>
+          <div class="subflow-note">
+            <div class="chip">Bounded refinement loop: max 2 to 3 passes</div>
+            <div class="chip">Evidence-aware scoring becomes easier once pain is quantified</div>
+            <div class="chip">Good fit for selective specialist-agent insertion later</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="matrix">
+      <div class="section-head">
+        <div class="section-num">3</div>
+        <div class="section-title">Node Execution Matrix</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="matrix-grid">
+        <article class="matrix-card live">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 01</div>
+              <div class="matrix-title">industry_scan</div>
+            </div>
+            <div class="status-pill status-live">Live</div>
+          </div>
+          <div class="matrix-desc">First model call in the pipeline. It translates the brief into a short list of real operating environments with visible inefficiency.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>constraints</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt and output</div>
+              <div class="matrix-v"><code>prompts/industry_scan.txt</code> to <code>IndustryScanResult</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt contract</div>
+              <ul class="rule-list">
+                <li>Return 4 to 6 industries.</li>
+                <li>Focus on hidden operational inefficiencies, not AI hype.</li>
+                <li>Stay tightly anchored to the user brief and its domain.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="matrix-card live">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 02</div>
+              <div class="matrix-title">problem_mine</div>
+            </div>
+            <div class="status-pill status-live">Live</div>
+          </div>
+          <div class="matrix-desc">Narrows industry observations into recurring workflow failures with actual buyers, so the system does not jump from vague markets to product ideas.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>constraints</code>, <code>industries</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt and output</div>
+              <div class="matrix-v"><code>prompts/problem_mine.txt</code> to <code>ProblemMiningResult</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt contract</div>
+              <ul class="rule-list">
+                <li>Return 4 to 6 problems.</li>
+                <li>Prefer narrow recurring workflow failures over generic inefficiency.</li>
+                <li>Favor painful B2B problems with clear budget owners.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="matrix-card live">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 03</div>
+              <div class="matrix-title">generate_ideas</div>
+            </div>
+            <div class="status-pill status-live">Live</div>
+          </div>
+          <div class="matrix-desc">Converts validated pain into product candidates with enough commercial structure to be ranked instead of remaining raw brainstorm fragments.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>constraints</code>, <code>problems</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt and output</div>
+              <div class="matrix-v"><code>prompts/generate_ideas.txt</code> to <code>IdeaGenerationResult</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt contract</div>
+              <ul class="rule-list">
+                <li>Produce 4 to 6 ideas total.</li>
+                <li>Favor recurring-revenue B2B software feasible for a small team.</li>
+                <li>Avoid broad platforms, generic marketplaces, and all-in-one products.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="matrix-card live">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 04</div>
+              <div class="matrix-title">critique_ideas</div>
+            </div>
+            <div class="status-pill status-live">Live</div>
+          </div>
+          <div class="matrix-desc">Acts as the first adversarial checkpoint so the graph can punish weak assumptions before scoring makes a bad idea look falsely precise.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>ideas</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt and output</div>
+              <div class="matrix-v"><code>prompts/critique_ideas.txt</code> to <code>CritiqueResult</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt contract</div>
+              <ul class="rule-list">
+                <li>Critique every idea provided.</li>
+                <li>Attack urgency, willingness to pay, and adoption assumptions.</li>
+                <li>Keep the critic summary concise but actionable.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="matrix-card live">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 05</div>
+              <div class="matrix-title">score_ideas</div>
+            </div>
+            <div class="status-pill status-live">Live</div>
+          </div>
+          <div class="matrix-desc">Transforms drafts plus critiques into comparable scores, then enforces ranking and truncation rules inside the graph rather than inside the prompt.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>ideas</code>, <code>critiques</code>, <code>top_k</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt and output</div>
+              <div class="matrix-v"><code>prompts/score_ideas.txt</code> to <code>ScoreResult</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Prompt contract</div>
+              <ul class="rule-list">
+                <li>Score every idea provided.</li>
+                <li>Penalize weak moats, low urgency, or obvious commoditization.</li>
+                <li>Favor urgent, buyer-funded, small-team-feasible opportunities.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="matrix-card final">
+          <div class="matrix-head">
+            <div>
+              <div class="label">Node 06</div>
+              <div class="matrix-title">finalize_output</div>
+            </div>
+            <div class="status-pill status-live">Serializer</div>
+          </div>
+          <div class="matrix-desc">This step is intentionally non-LLM. It packages the ranked output into a stable report contract that the CLI and future API can both trust.</div>
+          <div class="matrix-stack">
+            <div class="matrix-block">
+              <div class="matrix-k">Consumes</div>
+              <div class="matrix-v"><code>user_brief</code>, <code>ranked_ideas</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Output</div>
+              <div class="matrix-v"><code>FinalReport</code> stored under <code>final_output</code></div>
+            </div>
+            <div class="matrix-block">
+              <div class="matrix-k">Why it matters</div>
+              <ul class="rule-list">
+                <li>Keeps report formatting separate from model prompting.</li>
+                <li>Makes markdown and JSON output routes share one final object.</li>
+                <li>Provides a clean boundary for tests and future API responses.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="contracts">
+      <div class="section-head">
+        <div class="section-num">4</div>
+        <div class="section-title">Contracts and State</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="contract-grid">
+        <article class="card tone-blue">
+          <div class="label">Graph state</div>
+          <h3>WorkflowState</h3>
+          <p>The graph passes a typed state object through every node so intermediate artifacts stay inspectable instead of disappearing inside prompts.</p>
+          <ul class="mini-list">
+            <li><code>user_brief</code>, <code>constraints</code>, <code>top_k</code></li>
+            <li><code>industries</code>, <code>problems</code>, <code>ideas</code>, <code>critiques</code></li>
+            <li><code>scores</code>, <code>ranked_ideas</code>, <code>final_output</code></li>
+          </ul>
+        </article>
+        <article class="card tone-teal">
+          <div class="label">Pydantic models</div>
+          <h3>Strict schemas</h3>
+          <p>Every node targets an explicit result model, which is the main protection against malformed model JSON polluting the graph.</p>
+          <ul class="mini-list">
+            <li><code>IndustryScanResult</code></li>
+            <li><code>ProblemMiningResult</code></li>
+            <li><code>IdeaGenerationResult</code></li>
+            <li><code>CritiqueResult</code></li>
+            <li><code>ScoreResult</code></li>
+            <li><code>FinalReport</code></li>
+          </ul>
+        </article>
+        <article class="card tone-gold">
+          <div class="label">Final object</div>
+          <h3>Serializable output</h3>
+          <p>The final report is shaped for both humans and code: markdown for quick reading, JSON for storage or downstream tooling.</p>
+          <ul class="mini-list">
+            <li>Generated timestamp</li>
+            <li>Original brief</li>
+            <li>Top ideas list</li>
+            <li>Score breakdown per idea</li>
+          </ul>
+        </article>
+      </div>
+      <div class="code-block">RunRequest --&gt; graph.invoke(state)
+state["industries"] --&gt; state["problems"] --&gt; state["ideas"]
+state["ideas"] + state["critiques"] --&gt; state["scores"] --&gt; state["ranked_ideas"]
+state["ranked_ideas"] --&gt; FinalReport</div>
+    </section>
+
+    <section class="section" id="runtime">
+      <div class="section-head">
+        <div class="section-num">5</div>
+        <div class="section-title">Runtime and Observability</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="runtime-grid">
+        <article class="card">
+          <div class="label">Model runtime</div>
+          <h3>OpenAI structured LLM</h3>
+          <p><code>OpenAIStructuredLLM</code> asks for a JSON object, parses the response, and validates it into the exact Pydantic model required by the node.</p>
+          <ul class="mini-list">
+            <li>Default model: <code>gpt-4o-mini</code></li>
+            <li>Empty responses fail fast</li>
+            <li>Invalid JSON becomes a runtime error immediately</li>
+          </ul>
+        </article>
+        <article class="card tone-plum">
+          <div class="label">Prompt system</div>
+          <h3>Prompt-per-node</h3>
+          <p>Each node loads its own prompt file, which keeps orchestration code small and lets prompt changes happen without rewriting the graph.</p>
+          <ul class="mini-list">
+            <li><code>prompts/industry_scan.txt</code></li>
+            <li><code>prompts/problem_mine.txt</code></li>
+            <li><code>prompts/generate_ideas.txt</code></li>
+            <li><code>prompts/critique_ideas.txt</code></li>
+            <li><code>prompts/score_ideas.txt</code></li>
+          </ul>
+        </article>
+        <article class="card tone-teal">
+          <div class="label">Tracing</div>
+          <h3>LangSmith visibility</h3>
+          <p>The OpenAI client is wrapped for tracing, so once LangSmith env vars are configured you can inspect prompt, response, timing, and failures per node.</p>
+          <ul class="mini-list">
+            <li><code>LANGSMITH_TRACING</code></li>
+            <li><code>LANGSMITH_API_KEY</code></li>
+            <li><code>LANGSMITH_PROJECT</code></li>
+            <li>Useful for real run evaluation, not just tests</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="flow-card" style="margin-top:18px">
+        <div class="flow-head">
+          <div>
+              <div class="flow-title">Structured call chain</div>
+              <div class="flow-sub">
+                This is the trust boundary that makes the graph debuggable: prompt text in, JSON out, strict model validation, then typed state updates.
+            </div>
+          </div>
+        </div>
+        <div class="trace-flow">
+          <div class="card">
+            <div class="label">Input</div>
+            <h3>Prompt assembly</h3>
+            <p>Node prompt + serialized state subset are assembled into the exact system and user messages sent to the model.</p>
+          </div>
+          <div class="trace-arrow">&rarr;</div>
+          <div class="card tone-blue">
+            <div class="label">Validation</div>
+            <h3>Strict parse and merge</h3>
+            <p>JSON is parsed, validated into a result model, then only the expected fields are merged back into <code>WorkflowState</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="decision-grid" style="margin-top:18px">
+        <article class="decision-card">
+          <div class="label">Runtime choice</div>
+          <h3>Validation lives in code</h3>
+          <p>The prompts ask for structure, but the real enforcement happens after the response lands. That keeps failure modes visible and testable.</p>
+        </article>
+        <article class="decision-card">
+          <div class="label">Flow choice</div>
+          <h3>Ranking lives in the graph</h3>
+          <p>Sorting, truncation, and missing-ID checks happen in Python, which keeps final ranking logic deterministic instead of prompt-dependent.</p>
+        </article>
+        <article class="decision-card">
+          <div class="label">Ops choice</div>
+          <h3>Tracing stays optional</h3>
+          <p>LangSmith is ready for deeper inspection, but local runs still work as a small CLI workflow without forcing extra infrastructure.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="future">
+      <div class="section-head">
+        <div class="section-num">6</div>
+        <div class="section-title">Future Specialist Workers</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="future-grid">
+        <article class="card tone-gold">
+          <div class="label">Deep agents later</div>
+          <h3>Research-heavy industry scan</h3>
+          <p>If industry discovery becomes tool-heavy, this node can delegate outward research without forcing the entire workflow to become one large autonomous agent.</p>
+        </article>
+        <article class="card tone-plum">
+          <div class="label">Validation lane</div>
+          <h3>Competitor and market checks</h3>
+          <p>A future validation worker can pull competitor evidence, reviews, job posts, or adjacent signals to sharpen scoring and filter out fake opportunities.</p>
+        </article>
+        <article class="card tone-teal">
+          <div class="label">Red team lane</div>
+          <h3>Stronger critique engine</h3>
+          <p>The critique stage is a good place for adversarial specialists because the output is bounded: stress the idea, list risks, and hand the result back to the graph.</p>
+        </article>
+      </div>
+      <div class="subflow-note" style="margin-top:18px">
+        <div class="chip">LangGraph remains the orchestrator</div>
+        <div class="chip">Specialists stay inside selected nodes</div>
+        <div class="chip">No autonomous infinite loop in V1</div>
+      </div>
+    </section>
+
+    <section class="section" id="inventory">
+      <div class="section-head">
+        <div class="section-num">7</div>
+        <div class="section-title">Inventory Snapshot</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="inventory-grid">
+        <article class="metric">
+          <div class="label">Current graph</div>
+          <div class="num">6</div>
+          <div class="metric-label">Implemented nodes</div>
+          <p>Sequential stages in the live graph.</p>
+        </article>
+        <article class="metric tone-blue">
+          <div class="label">Planned graph</div>
+          <div class="num">3</div>
+          <div class="metric-label">Planned stages</div>
+          <p>`quantify_pain`, `expand_ideas`, and `refine_ideas`.</p>
+        </article>
+        <article class="metric tone-teal">
+          <div class="label">Prompt files</div>
+          <div class="num">5</div>
+          <div class="metric-label">Prompt modules</div>
+          <p>One prompt file per active LLM node.</p>
+        </article>
+        <article class="metric tone-gold">
+          <div class="label">Result shape</div>
+          <div class="num">1</div>
+          <div class="metric-label">Final report</div>
+          <p>Single typed object returned to CLI or API callers.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="footer">
+      Startup Factory system diagram v2<br>
+      Built from <code>docs/startup-factory-architecture.md</code> and aligned with the current <code>startup_factory</code> package implementation.
+    </div>
+  </div>
+</body>
+</html>

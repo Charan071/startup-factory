@@ -5,8 +5,9 @@ import sys
 
 from pydantic import ValidationError
 
-from .graph import run_startup_factory
-from .schemas import FinalReport, RunRequest
+from .schemas import RunRequest
+from .services.formatting import render_markdown
+from .services.runner import execute_startup_factory
 
 
 def parse_constraints(items: list[str]) -> dict[str, str] | None:
@@ -30,41 +31,6 @@ def parse_constraints(items: list[str]) -> dict[str, str] | None:
     return constraints
 
 
-def render_markdown(report: FinalReport) -> str:
-    lines = [
-        "# Startup Factory Report",
-        "",
-        f"- Generated: {report.generated_at.isoformat()}",
-        f"- Brief: {report.brief}",
-        "",
-    ]
-
-    for index, idea in enumerate(report.top_ideas, start=1):
-        lines.extend(
-            [
-                f"## {index}. {idea.title}",
-                f"- Industry: {idea.industry}",
-                f"- Problem: {idea.problem}",
-                f"- Solution: {idea.solution}",
-                f"- ICP: {idea.icp}",
-                f"- MVP: {idea.mvp}",
-                f"- GTM: {idea.gtm}",
-                f"- Critic Summary: {idea.critic_summary}",
-                f"- Score: {idea.score:.1f}/10",
-                (
-                    "- Score Breakdown: "
-                    f"urgency={idea.score_breakdown.urgency}, "
-                    f"willingness_to_pay={idea.score_breakdown.willingness_to_pay}, "
-                    f"feasibility={idea.score_breakdown.feasibility}, "
-                    f"defensibility={idea.score_breakdown.defensibility}"
-                ),
-                "",
-            ]
-        )
-
-    return "\n".join(lines).strip() + "\n"
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Generate ranked B2B startup ideas from a brief."
@@ -82,6 +48,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print structured JSON instead of markdown",
     )
+    parser.add_argument(
+        "--no-save",
+        action="store_true",
+        help="Do not save a JSON run artifact to disk",
+    )
     return parser
 
 
@@ -96,15 +67,18 @@ def main(argv: list[str] | None = None) -> int:
             top_k=args.top_k,
             constraints=constraints,
         )
-        report = run_startup_factory(request)
+        result = execute_startup_factory(
+            request,
+            save_artifact=not args.no_save,
+        )
     except (RuntimeError, ValueError, ValidationError) as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
 
     if args.json:
-        print(report.model_dump_json(indent=2))
+        print(result.model_dump_json(indent=2))
     else:
-        print(render_markdown(report), end="")
+        print(render_markdown(result.report, result.saved_run), end="")
     return 0
 
 

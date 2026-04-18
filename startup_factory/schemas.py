@@ -93,6 +93,37 @@ class FinalReport(StrictModel):
     top_ideas: list[StartupIdea]
 
 
+class SavedRun(StrictModel):
+    run_id: str
+    artifact_path: str
+    artifact_name: str | None = None
+    created_at: datetime | None = None
+
+
+class RunSummary(StrictModel):
+    run_id: str
+    created_at: datetime
+    brief: str
+    artifact_name: str
+    top_idea_titles: list[str]
+    top_score: float | None = None
+
+
+class RunListResponse(StrictModel):
+    runs: list[RunSummary]
+
+
+class RunExecutionResult(StrictModel):
+    report: FinalReport
+    saved_run: SavedRun | None = None
+
+
+class SavedRunRecord(StrictModel):
+    saved_run: SavedRun
+    request: RunRequest
+    report: FinalReport
+
+
 class IndustryScanResult(StrictModel):
     industries: list[IndustryFinding]
 

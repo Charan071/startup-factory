@@ -1,14 +1,15 @@
 # LangChain Deep Agents Playground
 
-This repo contains a small `LangGraph` PDF Q&A example, a versioned planning area, and a new `startup_factory` CLI for generating ranked B2B startup ideas.
+This repo contains a small `LangGraph` PDF Q&A example, a versioned planning area, and a `startup_factory` stack that now includes a CLI, FastAPI backend, and a V3 Next.js frontend for generating ranked B2B startup ideas.
 
 ## In This Repo
 
 - `PDF Q&A Assistant`: a small, study-friendly `LangGraph` example in [app.py](app.py)
 - `Startup Factory Architecture`: the planned system design in [docs/startup-factory-architecture.md](docs/startup-factory-architecture.md)
-- `Latest Plan`: the current implementation plan in [docs/plans/2026-04-17-startup-factory-v1.md](docs/plans/2026-04-17-startup-factory-v1.md)
+- `Latest Plan`: the current implementation plan in [docs/plans/2026-04-18-startup-factory-v3.md](docs/plans/2026-04-18-startup-factory-v3.md)
 - `Plans Index`: versioned plan history in [docs/plans/index.md](docs/plans/index.md)
 - `Issues Index`: markdown backlog in [issues/index.md](issues/index.md)
+- `System Diagram`: the visual architecture reference in [docs/startup-factory-system-diagram.html](docs/startup-factory-system-diagram.html)
 
 ## Startup Factory Plan
 
@@ -22,7 +23,7 @@ The planned startup-idea system is `LangGraph`-first, with optional `deepagents`
 
 ## Startup Factory CLI
 
-The new V1 `startup_factory` package is a CLI-first startup idea generator that:
+The current `startup_factory` package is a CLI-first startup idea generator that:
 
 1. scans for inefficient industries
 2. mines narrow B2B problems
@@ -42,6 +43,12 @@ Optional JSON output:
 .\.venv\Scripts\python -m startup_factory.cli --brief "Find vertical SaaS ideas in logistics" --json
 ```
 
+Skip saving a run artifact:
+
+```powershell
+.\.venv\Scripts\python -m startup_factory.cli --brief "Find vertical SaaS ideas in logistics" --no-save
+```
+
 The CLI uses:
 
 - `OPENAI_API_KEY` for model-backed runs
@@ -50,6 +57,56 @@ The CLI uses:
   - `LANGSMITH_ENDPOINT`
   - `LANGSMITH_API_KEY`
   - `LANGSMITH_PROJECT`
+
+Saved run artifacts are written to `artifacts/startup_factory/` by default.
+
+## Startup Factory API
+
+The backend uses `FastAPI` around the same graph runtime:
+
+```powershell
+.\.venv\Scripts\python -m uvicorn startup_factory.api.main:app --reload
+```
+
+Endpoints:
+
+- `GET /api/v1/health`
+- `POST /api/v1/runs`
+- `GET /api/v1/runs`
+- `GET /api/v1/runs/{run_id}`
+- `GET /api/v1/runs/{run_id}/summary`
+
+## Startup Factory Frontend
+
+V3 adds a `Next.js + TypeScript + Tailwind CSS + TanStack Query` frontend in [frontend](frontend).
+
+Run the frontend:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The UI expects the FastAPI server to be running. By default it talks to:
+
+```text
+http://127.0.0.1:8000/api/v1
+```
+
+Override that in the frontend with:
+
+```dotenv
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1
+```
+
+The dashboard includes:
+
+- a startup brief composer
+- a constraint builder
+- ranked idea cards with score breakdowns
+- run artifact metadata
+- a saved run history view
 
 ## PDF Q&A Assistant
 

@@ -6,3 +6,5 @@ langsmith[openai-agents]
 python-dotenv
 pydantic
 pytest
+fastapi
+uvicorn

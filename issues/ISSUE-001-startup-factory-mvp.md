@@ -1,6 +1,6 @@
 # ISSUE-001 Startup Factory MVP
 
-- Status: `Open`
+- Status: `Done`
 - Priority: `High`
 - Owner: `Unassigned`
 

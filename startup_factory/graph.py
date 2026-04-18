@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from langgraph.graph import END, START, StateGraph
 
-from .config import OpenAIStructuredLLM, StructuredLLM
+from .config import StructuredLLM
 from .nodes.critique_ideas import build_critique_ideas_node
 from .nodes.finalize_output import build_finalize_output_node
 from .nodes.generate_ideas import build_generate_ideas_node
@@ -10,6 +10,7 @@ from .nodes.industry_scan import build_industry_scan_node
 from .nodes.problem_mine import build_problem_mine_node
 from .nodes.score_ideas import build_score_ideas_node
 from .schemas import FinalReport, RunRequest
+from .services.llm import OpenAIStructuredLLM
 from .state import WorkflowState
 
 

@@ -2,10 +2,12 @@
 
 ## Current Plan
 
-- [2026-04-17 Startup Factory V1](2026-04-17-startup-factory-v1.md)
+- [2026-04-18 Startup Factory V3](2026-04-18-startup-factory-v3.md)
 
 ## Version History
 
+- `v3` - frontend plan with Next.js, TypeScript, Tailwind, TanStack Query, and FastAPI-backed UI support
+- `v2` - shared execution service, saved run artifacts, and FastAPI layer
 - `v1` - initial repo conventions, issues backlog, and `startup_factory` CLI MVP
 
 ## Status Notes
